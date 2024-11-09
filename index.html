@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Web store v1.3</title>
+  
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Store</title>
+    <style>
+        /* Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Background & font settings */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #1f1f2e, #27293d);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        /* Store container */
+        .store {
+            background: #2c2f3e;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.3);
+            width: 320px;
+            text-align: center;
+            transition: transform 0.3s ease-in-out;
+            animation: glow-animation 3s infinite alternate;
+        }
+
+        /* Glow effect on hover */
+        .store:hover {
+            transform: scale(1.02);
+            box-shadow: 0px 0px 20px #8f94fb, 0px 0px 30px #4e54c8;
+        }
+
+        /* Heading with glow */
+        h1 {
+            color: #8f94fb;
+            text-shadow: 0px 0px 10px #8f94fb;
+            animation: text-glow 2s infinite alternate;
+        }
+
+        h2 {
+            color: #ffffff;
+        }
+
+        /* Forms and input fields */
+        #adminForm, #productForm, #productList, #cart {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"], input[type="number"], input[type="password"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 6px;
+            background-color: #3b3f50;
+            color: #ffffff;
+            outline: none;
+        }
+
+        /* Buttons with glow effect */
+        button {
+            padding: 12px;
+            width: 100%;
+            background: linear-gradient(135deg, #4e54c8, #8f94fb);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0px 0px 10px #8f94fb;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #3e3ea5, #6f75d8);
+            box-shadow: 0px 0px 15px #8f94fb, 0px 0px 30px #4e54c8;
+        }
+
+        /* List styles */
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid #3b3f50;
+            color: #dcdde1;
+        }
+
+        li button {
+            background-color: #ff4d4d;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0px 0px 5px #ff4d4d;
+        }
+
+        li button:hover {
+            background-color: #e63939;
+            box-shadow: 0px 0px 10px #ff4d4d, 0px 0px 15px #ff4d4d;
+        }
+
+        /* Price display with glow */
+        #totalPrice {
+            font-size: 20px;
+            font-weight: bold;
+            color: #8f94fb;
+            margin-top: 10px;
+            text-shadow: 0px 0px 10px #8f94fb;
+            animation: text-glow 2s infinite alternate;
+        }
+
+        /* Animations */
+        @keyframes glow-animation {
+            from {
+                box-shadow: 0px 0px 10px #4e54c8, 0px 0px 20px #8f94fb;
+            }
+            to {
+                box-shadow: 0px 0px 20px #4e54c8, 0px 0px 40px #8f94fb;
+            }
+        }
+
+        @keyframes text-glow {
+            from {
+                text-shadow: 0px 0px 10px #8f94fb, 0px 0px 20px #4e54c8;
+            }
+            to {
+                text-shadow: 0px 0px 20px #8f94fb, 0px 0px 40px #4e54c8;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="store">
+        <h1>Store</h1>
+
+        <!-- Konten admin dan produk tetap sama -->
+        <div id="adminForm">
+            <h2>Admin Login</h2>
+            <input type="password" id="adminPassword" placeholder="Masukkan password admin">
+            <button onclick="loginAdmin()">Login sebagai Admin</button>
+        </div>
+
+        <div id="productForm" style="display: none;">
+            <h2>Tambah atau Edit Produk</h2>
+            <input type="text" id="productName" placeholder="Nama Produk">
+            <input type="number" id="productPrice" placeholder="Harga Produk">
+            <button onclick="addProduct()">Tambahkan/Update Produk</button>
+        </div>
+
+        <div id="productList">
+            <h2>Daftar Produk</h2>
+            <ul id="products"></ul>
+        </div>
+
+        <div id="cart">
+            <h2>Keranjang</h2>
+            <ul id="cartItems"></ul>
+            <p><strong>Total Harga: </strong>Rp <span id="totalPrice">0</span></p>
+            <button onclick="checkout()">Checkout</button>
+        </div>
+    </div>
+
+    <!-- Script tetap sama seperti versi 1.1.1 sebelumnya -->
+    <script>
+        const ADMIN_PASSWORD = "1234"; // Ganti dengan password yang diinginkan
+        let products = JSON.parse(localStorage.getItem('products')) || [];
+        let cart = [];
+
+        function saveProducts() {
+            localStorage.setItem('products', JSON.stringify(products));
+        }
+
+        function displayProducts() {
+            const productList = document.getElementById('products');
+            productList.innerHTML = '';
+
+            products.forEach((product, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    ${product.name} - Rp ${product.price}
+                    <button onclick="addToCart(${index})">Tambah</button>
+                    ${isAdmin ? `<button onclick="removeProduct(${index})">Hapus</button>` : ""}
+                `;
+                productList.appendChild(li);
+            });
+        }
+
+        function displayCart() {
+            const cartItems = document.getElementById('cartItems');
+            const totalPriceElem = document.getElementById('totalPrice');
+            cartItems.innerHTML = '';
+
+            let totalPrice = 0;
+            cart.forEach((item, index) => {
+                totalPrice += item.price;
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    ${item.name} - Rp ${item.price}
+                    <button onclick="removeFromCart(${index})">Hapus</button>
+                `;
+                cartItems.appendChild(li);
+            });
+
+            totalPriceElem.textContent = totalPrice;
+        }
+
+        function addProduct() {
+            const name = document.getElementById('productName').value;
+            const price = parseInt(document.getElementById('productPrice').value);
+
+            if (!name || !price) {
+                alert("Nama produk dan harga harus diisi.");
+                return;
+            }
+
+            const existingProductIndex = products.findIndex(product => product.name === name);
+            if (existingProductIndex !== -1) {
+                products[existingProductIndex].price = price;
+            } else {
+                products.push({ name, price });
+            }
+
+            saveProducts();
+            displayProducts();
+            document.getElementById('productName').value = '';
+            document.getElementById('productPrice').value = '';
+        }
+
+        function addToCart(index) {
+            cart.push(products[index]);
+            displayCart();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            displayCart();
+        }
+
+        function removeProduct(index) {
+            products.splice(index, 1);
+            saveProducts();
+            displayProducts();
+        }
+
+        let isAdmin = false;
+
+        function loginAdmin() {
+            const password = document.getElementById("adminPassword").value;
+            if (password === ADMIN_PASSWORD) {
+                isAdmin = true;
+                document.getElementById("adminForm").style.display = "none";
+                document.getElementById("productForm").style.display = "block";
+                displayProducts();
+            } else {
+                alert("Password salah!");
+            }
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                alert("Keranjang kosong.");
+                return;
+            }
+
+            let orderDetails = "Orderan dari Web Store:\n\n";
+            cart.forEach(item => {
+                orderDetails += `${item.name} - Rp ${item.price}\n`;
+            });
+            orderDetails += `\nTotal Harga: Rp ${document.getElementById('totalPrice').textContent}`;
+
+            // Tambahkan waktu transaksi
+            const now = new Date();
+            const formattedDate = `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`;
+            const formattedTime = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+            orderDetails += `\n\nTanggal: ${formattedDate}\nWaktu: ${formattedTime}`;
+
+            // Kirim ke WhatsApp
+            const waLink = `https://wa.me/6281928079404?text=${encodeURIComponent(orderDetails)}`;
+            window.open(waLink, "_blank");
+
+            // Kosongkan keranjang setelah checkout
+            cart = [];
+            displayCart();
+        }
+
+        displayProducts();
+        displayCart();
+    </script>
+</body>
+</html>
+<!-- partial -->
+  
+</body>
+</html>
